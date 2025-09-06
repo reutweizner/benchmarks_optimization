@@ -35,13 +35,14 @@ def setup(num_files):
 
 
 def bench_pathlib(loops, tmp_path):
-    base_path = pathlib.Path(tmp_path)
+    #base_path = os.path(tmp_path)
     # Warm up the filesystem cache and keep some objects in memory.
-    all_entries = list(base_path.iterdir())
-    py_entries = [p for p in all_entries if p.suffix == ".py"]
+    #all_entries = os.listdir(base_path)
+    all_entries = [os.path.join(tmp_path, f) for f in os.listdir(tmp_path)]
+    py_entries = [p for p in all_entries if  os.path.splitext(p)[1] == ".py"]
     # FIXME: does this code really cache anything?
     for p in all_entries:
-        p.stat()
+        os.stat(p)
     assert len(all_entries) == NUM_FILES, len(all_entries)
 
     range_it = range(loops)
@@ -50,8 +51,8 @@ def bench_pathlib(loops, tmp_path):
 
     for _ in range_it:
         # Precompute all stats once per loop
-        all_stats = [p.stat() for p in all_entries]
-        py_stats  = [p.stat() for p in py_entries]
+        all_stats = [os.stat(p) for p in all_entries]
+        py_stats  = [os.stat(p) for p in py_entries]
 
         # Repeat access to simulate original 4× pattern
         for stats in [all_stats, py_stats, all_stats, py_stats]:
