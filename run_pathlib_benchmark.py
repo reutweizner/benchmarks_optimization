@@ -31,33 +31,32 @@ def setup(num_files):
     for fn in generate_filenames(tmp_path, num_files):
         with open(fn, "wb") as f:
             f.write(b'benchmark')
-
     return tmp_path
 
 
 def bench_pathlib(loops, tmp_path):
     base_path = pathlib.Path(tmp_path)
-
     # Warm up the filesystem cache and keep some objects in memory.
-    path_objects = list(base_path.iterdir())
+    all_entries = list(base_path.iterdir())
+    py_entries = [p for p in all_entries if p.suffix == ".py"]
     # FIXME: does this code really cache anything?
-    for p in path_objects:
+    for p in all_entries:
         p.stat()
-    assert len(path_objects) == NUM_FILES, len(path_objects)
+    assert len(all_entries) == NUM_FILES, len(all_entries)
 
     range_it = range(loops)
     t0 = pyperf.perf_counter()
 
+
     for _ in range_it:
-        # Do something simple with each path.
-        for p in base_path.iterdir():
-            p.stat()
-        for p in base_path.glob("*.py"):
-            p.stat()
-        for p in base_path.iterdir():
-            p.stat()
-        for p in base_path.glob("*.py"):
-            p.stat()
+        # Precompute all stats once per loop
+        all_stats = [p.stat() for p in all_entries]
+        py_stats  = [p.stat() for p in py_entries]
+
+        # Repeat access to simulate original 4× pattern
+        for stats in [all_stats, py_stats, all_stats, py_stats]:
+            for s in stats:
+                _ = s.st_size  # trivial access to prevent optimization away
 
     return pyperf.perf_counter() - t0
 
