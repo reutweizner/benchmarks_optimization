@@ -1,5 +1,5 @@
 """
-Test the performance of pathlib operations.
+Test the performance of Optimized benchmark.
 
 This benchmark stresses the creation of small objects, globbing, and system
 calls.
