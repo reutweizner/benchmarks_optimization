@@ -28,6 +28,36 @@ The optimization process for each benchmark involves the following steps:
 - `FlameGraph`: A tool for visualizing profiling data.
 - `pycryptodome`: A Python library for cryptographic operations.
 
+## Results
+### Pathlib Benchmark:
+
+**Speedup** : ~7.8x
+
+**Key improvements**:
+
+Reduced Python object creation overhead
+ 
+Fewer redundant system calls
+
+### Crypto Benchmark:
+
+**Speedup**: ~5.7x
+
+**Key improvements**:
+
+Parallelized AES encryption using multiple cores
+
+C-based pycryptodome library instead of pure-python
+
+Flame graphs and profiling results are included in the repository for detailed analysis.
 ## Usage
 
-To run the benchmarks and generate flame graphs: run the dedicated script for each benchmark
+To run the benchmarks and generate flame graphs: 
+  # Clone the repository
+  git clone https://github.com/reutweizner/benchmarks_optimization.git
+  cd benchmarks_optimization
+  
+  # Run the benchmark scripts
+  python pathlib_benchmark.py
+  python crypto_benchmark.py
+
